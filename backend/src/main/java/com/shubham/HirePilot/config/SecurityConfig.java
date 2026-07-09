@@ -1,6 +1,7 @@
 package com.shubham.HirePilot.config;
 
 import com.shubham.HirePilot.security.JwtFilter;
+import com.shubham.HirePilot.security.JwtService;
 import com.shubham.HirePilot.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,19 +32,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
     private final UserRepository userRepository;
 
     private static final String[] PUBLIC_ENDPOINTS = {
 
-            "api/v1/auth/**",
+            "/api/auth/**",
             "/swagger-ui/**",
             "/v3/api-docs/**"
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public JwtFilter jwtFilter(UserDetailsService userDetailsService) {
+        return new JwtFilter(jwtService, userDetailsService);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception{
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -64,7 +69,7 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider(){
 
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsPasswordService((UserDetailsPasswordService) userDetailsService);
+        provider.setUserDetailsService(userDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
