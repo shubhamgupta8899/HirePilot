@@ -24,8 +24,7 @@ public class Resume extends BaseEntity {
     @Column(nullable = false)
     private long fileSize;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BYTEA")
     private byte[] fileData;
 
     @Lob

@@ -1,9 +1,7 @@
 services:
   postgres:
     image: postgres:16
-
     container_name: hirepilot-postgres
-
     restart: always
 
     environment:
@@ -17,5 +15,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: hirepilot-qdrant
+
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+    volumes:
+      - qdrant_data:/qdrant/storage
+
 volumes:
   postgres-data:
+  qdrant_data:

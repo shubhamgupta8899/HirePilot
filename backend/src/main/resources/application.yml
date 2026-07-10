@@ -1,4 +1,23 @@
 spring:
+
+  ai:
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: resumes
+        use-tls: false
+        initialize-schema: true
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        options:
+          model: mxbai-embed-large
+      chat:
+        options:
+          model: llama3
+
+
   datasource:
     url: jdbc:postgresql://localhost:5432/hirepilot
     username: postgres
@@ -19,7 +38,13 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+
 jwt:
   secret: zK9mP3qR7tY2wX5vN8jL4bC6dF0hJ1kM3nQ5rT7uW9x=
   access-token-expiration: 86400000   # 24 hours
   refresh-token-expiration: 604800000 # 7 days
+
+
+
+
+
