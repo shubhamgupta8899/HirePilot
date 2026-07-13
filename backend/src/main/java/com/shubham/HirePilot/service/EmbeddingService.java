@@ -51,8 +51,10 @@ public class EmbeddingService {
      */
     public List<Document> searchResumes(String jobDescription, int topK) {
 
-        SearchRequest request = SearchRequest.query(jobDescription)
-                .withTopK(topK);
+        SearchRequest request = SearchRequest.builder()
+                .query(jobDescription)
+                .topK(topK)
+                .build();
 
         return vectorStore.similaritySearch(request);
     }
