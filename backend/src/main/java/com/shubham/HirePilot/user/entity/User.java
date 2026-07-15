@@ -3,6 +3,7 @@ package com.shubham.HirePilot.user.entity;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.shubham.HirePilot.common.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,6 +29,7 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
 
     @Column(nullable = false, length = 255, unique = true)
+    @Email
     private String email;
 
     @Column(nullable = false)

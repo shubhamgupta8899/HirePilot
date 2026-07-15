@@ -1,6 +1,6 @@
 CREATE TABLE resumes (
     id BIGSERIAL PRIMARY KEY,
-    uploaded_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    uploaded_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
     content_type VARCHAR(100) NOT NULL,
     file_size BIGINT NOT NULL,
