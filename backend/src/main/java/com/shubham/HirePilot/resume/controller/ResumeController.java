@@ -3,6 +3,7 @@ package com.shubham.HirePilot.resume.controller;
 import com.shubham.HirePilot.resume.entity.Resume;
 import com.shubham.HirePilot.resume.repository.ResumeRepository;
 import com.shubham.HirePilot.resume.service.ResumeService;
+import com.shubham.HirePilot.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/resume")
@@ -26,34 +28,37 @@ public class ResumeController {
                                                Authentication authentication) throws IOException{
 
         //Take userId from Authentication
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User currentUser = (User) authentication.getPrincipal();
 
-        Resume resume = resumeService.uploadResume(file, null);
+        Resume resume = resumeService.uploadResume(file, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(resume);
     }
 
     @GetMapping
     public ResponseEntity<List<Resume>> getUserResume(Authentication authentication){
 
-        List<Resume> resumes = resumeService.getUserResume(1L); // Hardcoded for now
+        User currentUser = (User) authentication.getPrincipal();
+        List<Resume> resumes = resumeService.getUserResume(currentUser.getId()); // Hardcoded for now
         return ResponseEntity.ok(resumes);
     }
 
-    @GetMapping("/{resumeId}")
+    @GetMapping("/getresume/{resumeId}")
     public ResponseEntity<Resume> getResume(
-            @PathVariable Long resumeId,
+            @PathVariable UUID resumeId,
             Authentication authentication){
 
-        Resume resume = resumeService.getResume(resumeId, 1L);
+        User currentUser = (User) authentication.getPrincipal();
+        Resume resume = resumeService.getResume(resumeId, currentUser.getId());
         return ResponseEntity.ok(resume);
     }
 
-    @DeleteMapping("/{resumeId}")
+    @DeleteMapping("/delete/{resumeId}")
     public ResponseEntity<Void> deleteResume(
-            @PathVariable Long resumeId,
+            @PathVariable UUID resumeId,
             Authentication authentication){
 
-        resumeService.deleteResume(resumeId, 1L);
+        User currentUser = (User) authentication.getPrincipal();
+        resumeService.deleteResume(resumeId, currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 

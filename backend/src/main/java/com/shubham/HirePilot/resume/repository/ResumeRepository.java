@@ -7,15 +7,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ResumeRepository extends JpaRepository<Resume, Long> {
+public interface ResumeRepository extends JpaRepository<Resume, UUID> {
 
-    List<Resume> findByUploadedById(Long userId);
+    List<Resume> findByUploadedById(UUID userId);
 
-    Optional<Resume> findByIdAndUploadedById(Long id, Long userId);
+    Optional<Resume> findByIdAndUploadedById(UUID id, UUID userId);
 
     List<Resume> findByParseStatus(ParseStatus status);
 
-    Long countByUploadedId(Long userId);
+    Long countByUploadedById(UUID userId);
+
+    boolean existsByIdAndUploadedById(UUID id, UUID userId);
 }

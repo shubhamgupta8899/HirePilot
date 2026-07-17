@@ -1,5 +1,6 @@
 package com.shubham.HirePilot.resume.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.shubham.HirePilot.common.BaseEntity;
 import com.shubham.HirePilot.user.entity.User;
 import jakarta.persistence.*;
@@ -27,7 +28,7 @@ public class Resume extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BYTEA")
     private byte[] fileData;
 
-    @Lob
+
     @Column(columnDefinition = "TEXT")
     private String parsedText;
 
@@ -38,5 +39,6 @@ public class Resume extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_By", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User uploadedBy;
 }

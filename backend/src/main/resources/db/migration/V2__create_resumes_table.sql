@@ -1,5 +1,5 @@
 CREATE TABLE resumes (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     uploaded_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
     content_type VARCHAR(100) NOT NULL,

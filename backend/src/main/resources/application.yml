@@ -34,9 +34,16 @@ spring:
         jdbc:
           time_zone: UTC
 
+        connection:
+          autocommit: false
+
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 
 jwt:

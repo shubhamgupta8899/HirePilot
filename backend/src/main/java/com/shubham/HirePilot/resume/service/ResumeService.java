@@ -6,6 +6,7 @@ import com.shubham.HirePilot.resume.repository.ResumeRepository;
 import com.shubham.HirePilot.service.EmbeddingService;
 import com.shubham.HirePilot.service.TextExtractionService;
 import com.shubham.HirePilot.user.entity.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ResumeService {
 
     private final EmbeddingService embeddingService;
@@ -46,7 +49,7 @@ public class ResumeService {
             );
 
             resume.setParsedText(extractedText);
-            resume.setParseStatus(ParseStatus.FAILED);
+            resume.setParseStatus(ParseStatus.COMPLETED);
         }catch (Exception e){
 
             log.error("Text extraction failed for resume {}: {}", resume.getId(), e.getMessage());
@@ -69,18 +72,24 @@ public class ResumeService {
         return resume;
     }
 
-    public List<Resume> getUserResume(Long userId){
+    public List<Resume> getUserResume(UUID userId){
 
         return resumeRepository.findByUploadedById(userId);
     }
 
-    public Resume getResume(Long resumeId, Long userId){
+    @Transactional
+    public Resume getResume(UUID resumeId, UUID userId){
 
         return resumeRepository.findByIdAndUploadedById(resumeId, userId)
                 .orElseThrow(()-> new RuntimeException("Resume not found"));
     }
 
-    public void deleteResume(Long resumeId, Long userId){
+    @Transactional
+    public void deleteResume(UUID resumeId, UUID userId){
+
+        if (!resumeRepository.existsByIdAndUploadedById(resumeId, userId)) {
+            throw new RuntimeException("Resume not found");
+        }
 
         Resume resume = getResume(resumeId, userId);
         resumeRepository.delete(resume);
