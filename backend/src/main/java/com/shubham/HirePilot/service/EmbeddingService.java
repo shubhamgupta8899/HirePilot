@@ -24,26 +24,38 @@ public class EmbeddingService {
      */
     public void embedResume(Resume resume) {
 
+        log.info(" Starting embedding process for resume: {}", resume.getId());
+
         if (resume.getParsedText() == null || resume.getParsedText().isEmpty()) {
             log.warn("Resume ID: {} me koi text nahi hai", resume.getId());
             return;
         }
 
         // Document banao — Qdrant ko ye format chahiye
-        Document doc = new Document(
-                resume.getParsedText(),  // Content
-                java.util.Map.of(
-                        "resumeId", resume.getId().toString(),
-                        "userId", resume.getUploadedBy().getId().toString(),
-                        "fileName", resume.getFileName(),
-                        "uploadDate", resume.getCreatedAt().toString()
-                )
-        );
+        try {
+            // Document banao
+            Document doc = new Document(
+                    resume.getParsedText(),
+                    java.util.Map.of(
+                            "resumeId", resume.getId().toString(),
+                            "userId", resume.getUploadedBy().getId().toString(),
+                            "fileName", resume.getFileName(),
+                            "uploadDate", resume.getCreatedAt().toString()
+                    )
+            );
 
-        // Qdrant me store kar
-        vectorStore.add(List.of(doc));
+            log.info(" Document created. Text length: {} chars", resume.getParsedText().length());
 
-        log.info("Resume {} embedded successfully in Qdrant", resume.getId());
+            // Qdrant me store kar
+            vectorStore.add(List.of(doc));
+
+            log.info(" Resume {} embedded successfully in Qdrant", resume.getId());
+
+        } catch (Exception e) {
+            log.error(" Embedding error for resume {}: {}", resume.getId(), e.getMessage(), e);
+            throw new RuntimeException("Failed to embed resume: " + e.getMessage(), e);
+        }
+
     }
 
     /**
