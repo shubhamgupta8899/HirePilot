@@ -21,7 +21,7 @@ public class RequestMatchingService {
 
     private final EmbeddingService embeddingService;
     private final JobDescriptionRepository jobDescriptionRepository;
-
+    private final ResumeRerankingService resumeRerankingService;
     public List<JobMatchResponse> findMatchingResumes(String jobDescription, int topK){
 
         List<Document> similarDocs = embeddingService.searchResumes(jobDescription, topK);
@@ -46,9 +46,15 @@ public class RequestMatchingService {
         log.info("Matching resumes for job '{}' (id={})", job.getTitle(), jobId);
 
         // Step 3: wahi purana embedding-search logic reuse karo
-        List<Document> similarDocs = embeddingService.searchResumes(queryText, topK);
+        List<Document> similarDocs = embeddingService.searchResumes(queryText, Math.max(topK * 2, 20));
 
-        return similarDocs.stream().map(this::documentToResponse).collect(Collectors.toList());
+        List<JobMatchResponse> initialMatches = similarDocs.stream()
+                .map(this::documentToResponse)
+                .collect(Collectors.toList());
+
+        List<JobMatchResponse> reranked = resumeRerankingService.rerank(job.getDescription(), initialMatches);
+
+        return reranked.stream().limit(topK).collect(Collectors.toList());
     }
 
     private JobMatchResponse documentToResponse(Document doc){
